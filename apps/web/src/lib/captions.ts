@@ -10,6 +10,8 @@ export interface Timeline {
   ends: number[];
   /** Words grouped into short on-screen chunks: [startWord, endWordExclusive]. */
   chunks: [number, number][];
+  /** Sentences as word ranges: [startWord, endWordExclusive]. */
+  sentences: [number, number][];
 }
 
 const MAX_CHUNK_WORDS = 4;
@@ -37,7 +39,16 @@ export function buildTimeline(text: string): Timeline {
     }
   });
 
-  return { words, ends, chunks };
+  const sentences: [number, number][] = [];
+  let sentenceStart = 0;
+  words.forEach((w, i) => {
+    if (/[.!?]["')\]]?$/.test(w) || i === words.length - 1) {
+      sentences.push([sentenceStart, i + 1]);
+      sentenceStart = i + 1;
+    }
+  });
+
+  return { words, ends, chunks, sentences };
 }
 
 export function wordAt(timeline: Timeline, progress: number): number {
@@ -45,14 +56,22 @@ export function wordAt(timeline: Timeline, progress: number): number {
   return i === -1 ? timeline.words.length - 1 : i;
 }
 
-/** Map a character offset (from speechSynthesis boundary events) to a word index. */
-export function wordAtChar(timeline: Timeline, charIndex: number): number {
+/**
+ * Map a character offset within the text `words[start..end)` (as spoken by one utterance,
+ * from a speechSynthesis boundary event) to a word index.
+ */
+export function wordAtChar(
+  timeline: Timeline,
+  start: number,
+  end: number,
+  charIndex: number,
+): number {
   let pos = 0;
-  for (let i = 0; i < timeline.words.length; i++) {
+  for (let i = start; i < end; i++) {
     pos += timeline.words[i]!.length + 1;
     if (charIndex < pos) return i;
   }
-  return timeline.words.length - 1;
+  return end - 1;
 }
 
 export function chunkFor(timeline: Timeline, word: number): [number, number] {

@@ -5,6 +5,7 @@ import { toUrl, type Route } from '../lib/params.ts';
 import { useNarrator } from '../hooks/useNarrator.ts';
 import { Reel } from './Reel.tsx';
 import { EndCard } from './EndCard.tsx';
+import { Frame } from './Frame.tsx';
 import { Failure, Loading } from './Status.tsx';
 
 type State =
@@ -135,6 +136,8 @@ function Feed({ script, onHome }: { script: ScriptResponse; onHome: () => void }
       ref={scroller}
       className="no-scrollbar h-dvh snap-y snap-mandatory overflow-y-scroll overscroll-contain"
     >
+      <Background playing={active < count} />
+
       <button
         onClick={onHome}
         className="fixed top-4 left-4 z-30 rounded-full bg-black/50 px-4 py-2 text-sm font-semibold backdrop-blur hover:bg-black/70"
@@ -146,7 +149,7 @@ function Feed({ script, onHome }: { script: ScriptResponse; onHome: () => void }
         <section
           key={i}
           ref={(el) => void (sections.current[i] = el)}
-          className="snap-start snap-always"
+          className="relative z-10 snap-start snap-always"
         >
           <Reel
             index={i}
@@ -154,7 +157,6 @@ function Feed({ script, onHome }: { script: ScriptResponse; onHome: () => void }
             reel={reel}
             seriesTitle={script.title}
             isActive={active === i}
-            isNear={Math.abs(active - i) <= 1}
             narrator={narrator}
             muted={muted}
             onToggleMute={() => setMuted((m) => !m)}
@@ -162,9 +164,43 @@ function Feed({ script, onHome }: { script: ScriptResponse; onHome: () => void }
         </section>
       ))}
 
-      <section ref={(el) => void (sections.current[count] = el)} className="snap-start snap-always">
+      <section
+        ref={(el) => void (sections.current[count] = el)}
+        className="relative z-10 snap-start snap-always"
+      >
         <EndCard script={script} onRestart={() => goTo(0)} onHome={onHome} />
       </section>
+    </div>
+  );
+}
+
+/**
+ * One background video for the whole feed, fixed behind the (transparent) reel frames.
+ * A single element means the clip downloads once and keeps playing across reels.
+ */
+function Background({ playing }: { playing: boolean }) {
+  const video = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    if (playing) v.play().catch(() => {});
+    else v.pause();
+  }, [playing]);
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
+      <Frame>
+        <video
+          ref={video}
+          src="/backgrounds/gameplay-1.mp4"
+          muted
+          loop
+          autoPlay
+          playsInline
+          preload="auto"
+          className="absolute inset-0 size-full object-cover"
+        />
+      </Frame>
     </div>
   );
 }

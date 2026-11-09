@@ -35,10 +35,17 @@ browser ──/api/*──▶ Pages Function ──service binding──▶ reel
 - **Lessons are saved.** Each lesson's id is a hash of topic + reel count + style, so asking for
   the same thing again returns the saved lesson instantly without calling a model. After
   generating, the URL becomes `/?lesson=<id>`, a permalink that never regenerates.
-- **Narration.** The reel text is split into sentence groups that are synthesized in parallel and
-  streamed back in order as one MP3, so playback starts after the first sentence. Audio is stored
-  in KV permanently, so replays cost nothing. If TTS fails, the browser's built-in speech
-  synthesis takes over.
+- **Narration.** The browser's built-in speech synthesis is the default: it's free, instant,
+  and spends none of the account's limits. Reels are spoken a sentence at a time (this works
+  around Chrome cutting off long utterances), and captions follow word-boundary events where
+  the browser reports them, or are estimated within the current sentence where it doesn't.
+  Only if the browser can't speak does the player use the Workers AI voice from
+  `/api/lessons/:id/audio/:n`. That audio is generated once per reel, streamed, and stored in
+  KV, so even that fallback is paid for at most once.
+- **Background video.** One shared `<video>` sits behind the transparent reel frames, so the
+  clip downloads once. The MP4 is "faststart" (index before the frames), because Pages doesn't
+  serve byte ranges and a browser can't play an MP4 whose index is at the end until it has
+  downloaded the whole file.
 - **Abuse limits.** Per-IP rate limits on script generation and fresh TTS. The audio endpoint
   only speaks text from saved lessons, so it can't be used as an open TTS proxy.
 

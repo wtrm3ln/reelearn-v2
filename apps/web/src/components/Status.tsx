@@ -18,7 +18,7 @@ export function Loading({ topic, saved = false }: { topic: string; saved?: boole
   }, [saved]);
 
   return (
-    <Frame className="flex flex-col items-center justify-center bg-panel p-8 text-center">
+    <Frame className="bg-panel flex flex-col items-center justify-center p-8 text-center">
       <div className="mb-8 size-12 animate-spin rounded-full border-4 border-line border-t-zap" />
       <p className="text-sm font-semibold tracking-wide text-mute uppercase">
         {saved ? 'Loading lesson' : `${STEPS[step]}…`}
@@ -44,7 +44,7 @@ export function Failure({
   onHome: () => void;
 }) {
   return (
-    <Frame className="flex flex-col items-center justify-center bg-panel p-8 text-center">
+    <Frame className="bg-panel flex flex-col items-center justify-center p-8 text-center">
       <p className="text-4xl">:/</p>
       <h1 className="mt-4 text-2xl font-black">That didn't work</h1>
       <p className="mt-2 text-mute">{message}</p>

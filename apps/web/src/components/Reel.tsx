@@ -1,10 +1,7 @@
-import { useEffect, useRef } from 'react';
 import type { Reel as ReelData } from '@reelearn/shared';
 import type { useNarrator } from '../hooks/useNarrator.ts';
 import { chunkFor } from '../lib/captions.ts';
 import { Frame } from './Frame.tsx';
-
-const BACKGROUNDS = ['/backgrounds/gameplay-1.mp4'];
 
 interface Props {
   index: number;
@@ -12,8 +9,6 @@ interface Props {
   reel: ReelData;
   seriesTitle: string;
   isActive: boolean;
-  /** Within one reel of the active one: worth loading the background video. */
-  isNear: boolean;
   narrator: ReturnType<typeof useNarrator>;
   muted: boolean;
   onToggleMute: () => void;
@@ -25,41 +20,16 @@ export function Reel({
   reel,
   seriesTitle,
   isActive,
-  isNear,
   narrator,
   muted,
   onToggleMute,
 }: Props) {
-  const video = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const v = video.current;
-    if (!v) return;
-    if (isActive) v.play().catch(() => {});
-    else v.pause();
-  }, [isActive]);
-
   const status = isActive ? narrator.status : 'paused';
   const progress = isActive ? narrator.progress : 0;
 
   return (
-    <Frame>
-      {isNear && (
-        <video
-          ref={video}
-          src={BACKGROUNDS[index % BACKGROUNDS.length]}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          // Start each reel at a different point in the clip so they don't all look the same.
-          onLoadedMetadata={(e) => {
-            const v = e.currentTarget;
-            if (v.duration) v.currentTime = (index * 37) % v.duration;
-          }}
-          className="absolute inset-0 size-full object-cover"
-        />
-      )}
+    // Transparent: the shared background video (see Feed) shows through.
+    <Frame className="bg-transparent">
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/80" />
 
       {/* Tap anywhere to play / pause */}

@@ -27,7 +27,7 @@ export function EndCard({
   };
 
   return (
-    <Frame className="flex flex-col justify-center bg-panel p-8">
+    <Frame className="bg-panel flex flex-col justify-center p-8">
       <p className="text-xs font-semibold tracking-wide text-zap uppercase">Series complete</p>
       <h2 className="mt-2 text-4xl leading-none font-black text-balance">{script.title}</h2>
       <ol className="mt-6 space-y-2">
@@ -53,7 +53,7 @@ export function EndCard({
       </div>
       <p className="mt-8 text-xs text-mute">
         Written by <code className="text-zinc-400">{script.model}</code> via OpenRouter
-        {script.cached ? ' (cached)' : ''}. Voice by Workers AI.
+        {script.cached ? ' (saved)' : ''}. Narrated by your browser's voice.
       </p>
     </Frame>
   );
