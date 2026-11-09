@@ -1,0 +1,40 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "reelearn-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-01",
+  "observability": { "enabled": true },
+
+  // Workers AI, used for text-to-speech.
+  "ai": { "binding": "AI", "remote": true },
+
+  // Saved lessons (the gallery, kept forever) and a 7-day cache of narration audio.
+  // With no "id", `wrangler deploy` provisions the namespace automatically (or create one with
+  // `npx wrangler kv namespace create STORE` and paste the id here).
+  "kv_namespaces": [{ "binding": "STORE" }],
+
+  // Per-IP rate limits so a public deploy can't burn through the free OpenRouter quota.
+  "ratelimits": [
+    { "name": "SCRIPT_LIMITER", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } },
+    { "name": "TTS_LIMITER", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } },
+  ],
+
+  "vars": {
+    // Workers AI text-to-speech. MeloTTS is cheap enough for the free plan's 10,000 neurons/day.
+    // @cf/deepgram/aura-2-en sounds much better (TTS_VOICE: orion, luna, apollo, ...) but uses
+    // the free allowance after a dozen or so reels, so it's best on Workers Paid.
+    // Tried in order until one returns a usable script. Larger free models first, then
+    // "openrouter/free", which routes to whatever free model is available (sometimes a tiny one).
+    // Free models come and go: https://openrouter.ai/models?max_price=0
+    "OPENROUTER_MODELS": "google/gemma-4-31b-it:free,dots-studio/dots-3-note-preview:free,xingchen-agi/xing4.0-29b-a4b:free,openrouter/free",
+    "TTS_MODEL": "@cf/myshell-ai/melotts",
+    "TTS_VOICE": "orion",
+    "APP_URL": "https://reelearn.pages.dev",
+    // Comma-separated. Only needed when the browser calls the Worker directly;
+    // the Pages app proxies /api/* through a service binding (same origin).
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://reelearn.pages.dev",
+  },
+
+  // Secrets (set with `npx wrangler secret put OPENROUTER_API_KEY`, locally in .dev.vars):
+  //   OPENROUTER_API_KEY
+}

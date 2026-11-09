@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Cloudflare Pages project. Static assets come from Vite's build; /api/* is handled by
+  // functions/api/[[path]].ts, which forwards to the reelearn-api Worker over a service binding.
+  "name": "reelearn",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2025-11-01",
+  "services": [{ "binding": "API", "service": "reelearn-api" }],
+}

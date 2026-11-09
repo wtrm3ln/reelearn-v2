@@ -1,0 +1,29 @@
+{
+  "name": "reelearn",
+  "private": true,
+  "description": "Learn anything as short-form reels. Cloudflare Pages + Workers monorepo.",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c magenta,cyan \"npm run dev -w @reelearn/api\" \"npm run dev -w @reelearn/web\"",
+    "build": "npm run build -w @reelearn/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run typecheck && npm run test",
+    "deploy:api": "npm run deploy -w @reelearn/api",
+    "deploy:web": "npm run deploy -w @reelearn/web",
+    "deploy": "npm run deploy:api && npm run deploy:web",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}

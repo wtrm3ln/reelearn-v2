@@ -1,0 +1,21 @@
+{
+  "name": "@reelearn/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@reelearn/shared": "*",
+    "hono": "^4.10.4"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.12",
+    "wrangler": "^4.54.0"
+  }
+}

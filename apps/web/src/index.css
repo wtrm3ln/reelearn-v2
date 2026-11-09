@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0a0a0b;
+  --color-panel: #151518;
+  --color-line: #26262b;
+  --color-mute: #8b8b94;
+  --color-zap: #d4ff3a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--color-ink);
+  color: #f4f4f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Chunky outlined caption text, the house style of short-form video. */
+.caption {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 6px #000;
+  text-shadow: 0 4px 18px rgb(0 0 0 / 0.55);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-pop {
+  animation: pop 160ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop {
+    animation: none;
+  }
+}

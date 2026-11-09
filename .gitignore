@@ -1,0 +1,23 @@
+# deps
+node_modules/
+
+# builds
+dist/
+.wrangler/
+*.tsbuildinfo
+
+# secrets / local env
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+!.env.example
+
+# old code (contains hardcoded keys, kept locally for reference only)
+_legacy/
+
+# misc
+.DS_Store
+*.log
+coverage/
