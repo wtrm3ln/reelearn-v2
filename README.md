@@ -63,19 +63,33 @@ npm run build      # production build of the web app
 
 ## Deploying
 
+Live at **https://reelearn-3ni.pages.dev**. Both halves deploy from GitHub on every push to
+`main`:
+
+| Part     | Cloudflare project    | Root dir   | Build                                                           |
+| -------- | --------------------- | ---------- | --------------------------------------------------------------- |
+| Frontend | Pages `reelearn`      | `apps/web` | `cd ../.. && npm ci && npm run build -w @reelearn/web` → `dist` |
+| API      | Worker `reelearn-api` | `apps/api` | Workers Builds: `npm ci`, then `npx wrangler deploy`            |
+
+Pages only rebuilds when `apps/web`, `packages/shared` or the root package files change. It
+sets `SKIP_DEPENDENCY_INSTALL=1` and `NODE_VERSION=22` because the install has to run from the
+workspace root. Pull requests get Pages preview deployments.
+
+The OpenRouter key is a Worker secret, set once:
+
 ```bash
-npx wrangler secret put OPENROUTER_API_KEY --cwd apps/api   # once
-npm run deploy     # deploys the API Worker, then builds + deploys the Pages site
+npx wrangler secret put OPENROUTER_API_KEY --cwd apps/api
 ```
 
-The first `wrangler deploy` provisions the `STORE` KV namespace automatically, and the first
-`wrangler pages deploy` creates the `reelearn` Pages project. Deploy the Worker first: the
-Pages project's `API` service binding points at `reelearn-api`. If you use a custom domain,
-update `APP_URL` and `ALLOWED_ORIGINS` in `apps/api/wrangler.jsonc`.
+Manual deploys from your machine still work:
 
-To deploy from git instead, connect the repo in the Cloudflare dashboard: a Pages project with
-root `apps/web`, build command `npm run build`, output `dist`, and Workers Builds for
-`apps/api`.
+```bash
+npm run deploy     # the API Worker, then build + deploy the Pages site
+```
+
+Deploy the Worker before the Pages site: the Pages `API` service binding points at
+`reelearn-api`. If you add a custom domain, update `APP_URL` and `ALLOWED_ORIGINS` in
+`apps/api/wrangler.jsonc`.
 
 ## Configuration (`apps/api/wrangler.jsonc`)
 

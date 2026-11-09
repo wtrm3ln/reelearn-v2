@@ -8,10 +8,9 @@
   // Workers AI, used for text-to-speech.
   "ai": { "binding": "AI", "remote": true },
 
-  // Saved lessons (the gallery, kept forever) and a 7-day cache of narration audio.
-  // With no "id", `wrangler deploy` provisions the namespace automatically (or create one with
-  // `npx wrangler kv namespace create STORE` and paste the id here).
-  "kv_namespaces": [{ "binding": "STORE" }],
+  // Saved lessons (the gallery) and their narration audio, kept forever.
+  // To deploy to a different account, delete "id" and `wrangler deploy` provisions a new one.
+  "kv_namespaces": [{ "binding": "STORE", "id": "4305633623c648e595d9bb33a1ef87f5" }],
 
   // Per-IP rate limits so a public deploy can't burn through the free OpenRouter quota.
   "ratelimits": [
@@ -29,10 +28,10 @@
     "OPENROUTER_MODELS": "google/gemma-4-31b-it:free,dots-studio/dots-3-note-preview:free,xingchen-agi/xing4.0-29b-a4b:free,openrouter/free",
     "TTS_MODEL": "@cf/myshell-ai/melotts",
     "TTS_VOICE": "orion",
-    "APP_URL": "https://reelearn.pages.dev",
+    "APP_URL": "https://reelearn-3ni.pages.dev",
     // Comma-separated. Only needed when the browser calls the Worker directly;
     // the Pages app proxies /api/* through a service binding (same origin).
-    "ALLOWED_ORIGINS": "http://localhost:5173,https://reelearn.pages.dev",
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://reelearn-3ni.pages.dev",
   },
 
   // Secrets (set with `npx wrangler secret put OPENROUTER_API_KEY`, locally in .dev.vars):
